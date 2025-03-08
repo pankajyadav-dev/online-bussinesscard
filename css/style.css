@@ -1,0 +1,115 @@
+/* Custom styles for Business Card Creator */
+
+/* Add some smoothness to transitions */
+a, button {
+    transition: all 0.3s ease;
+}
+
+/* QR Code container styling */
+#qrcode {
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    display: inline-block;
+    border: 1px solid #e5e7eb;
+}
+
+/* Form focus effects */
+input:focus, textarea:focus {
+    border-color: #3b82f6;
+}
+
+/* Card hover effects */
+.card-hover-effect {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Business card designs */
+.card-classic {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.card-modern {
+    font-family: 'Arial', sans-serif;
+}
+
+.card-creative {
+    font-family: 'Georgia', serif;
+}
+
+.card-minimalist {
+    font-family: 'Helvetica', Arial, sans-serif;
+}
+
+/* Profile image styling */
+.profile-image {
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom alert styles */
+.custom-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.alert-success {
+    background-color: #10B981;
+    color: white;
+}
+
+.alert-error {
+    background-color: #EF4444;
+    color: white;
+}
+
+/* Empty state illustrations */
+.empty-state-icon {
+    opacity: 0.7;
+    max-width: 150px;
+    margin: 0 auto;
+}
+
+/* Page transitions */
+.page-transition {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Loading spinner */
+.loader {
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #3b82f6;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+} 
