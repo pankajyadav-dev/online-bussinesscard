@@ -1,16 +1,13 @@
 <?php
-// Enable error reporting
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Define base URL for assets
 $base_url = '../../';
 
 require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 
-// Check if temporary user session exists
 if(!isset($_SESSION['temp_user_id']) || !isset($_SESSION['temp_email'])) {
     setMessage("Session expired. Please register again.", "error");
     header("Location: register.php");
@@ -20,38 +17,29 @@ if(!isset($_SESSION['temp_user_id']) || !isset($_SESSION['temp_email'])) {
 $user_id = $_SESSION['temp_user_id'];
 $email = $_SESSION['temp_email'];
 
-// Log for debugging
 error_log("Verification page loaded for user_id: $user_id, email: $email");
 
-// Check if form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     $verification_code = sanitizeInput($_POST['verification_code']);
     
-    // Validate verification code
     if(empty($verification_code)) {
         $error = "Verification code is required";
     } else {
-        // Check if verification code matches
         try {
             $stmt = $pdo->prepare("SELECT id FROM users WHERE id = ? AND verification_code = ?");
             $stmt->execute([$user_id, $verification_code]);
             
             if($stmt->rowCount() > 0) {
-                // Update user as verified
                 $stmt = $pdo->prepare("UPDATE users SET is_verified = 1, verification_code = NULL WHERE id = ?");
                 
                 if($stmt->execute([$user_id])) {
-                    // Set user as logged in
                     $_SESSION['user_id'] = $user_id;
                     
-                    // Remove temporary session variables
                     unset($_SESSION['temp_user_id']);
                     unset($_SESSION['temp_email']);
                     
-                    // Set success message
                     setMessage("Your email has been verified successfully. Welcome to the Business Card Creator!", "success");
                     
-                    // Redirect to dashboard
                     header("Location: ../../pages/profile/dashboard.php");
                     exit;
                 } else {
@@ -69,22 +57,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Resend verification code
 if(isset($_GET['resend']) && $_GET['resend'] == 'true') {
     try {
-        // Get user name
         $stmt = $pdo->prepare("SELECT name FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
         $user = $stmt->fetch();
         
-        // Generate new verification code
         $new_verification_code = generateVerificationCode();
         
-        // Update verification code in database
         $stmt = $pdo->prepare("UPDATE users SET verification_code = ? WHERE id = ?");
         
         if($stmt->execute([$new_verification_code, $user_id])) {
-            // Send verification email
             if(sendVerificationEmail($email, $user['name'], $new_verification_code)) {
                 $resend_success = "Verification code has been resent to your email.";
                 error_log("Verification code resent to: $email");

@@ -1,11 +1,9 @@
 <?php
-// Define base URL for assets
 $base_url = '../../';
 
 require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 
-// Check if card ID is provided
 if(!isset($_GET['id']) || empty($_GET['id'])) {
     setMessage("Invalid card ID.", "error");
     header("Location: /pages/profile/dashboard.php");
@@ -14,7 +12,6 @@ if(!isset($_GET['id']) || empty($_GET['id'])) {
 
 $card_id = (int)$_GET['id'];
 
-// Get card information
 $stmt = $pdo->prepare("
     SELECT uc.*, cd.name as design_name, cd.template_path, cd.category
     FROM user_cards uc 
@@ -31,10 +28,8 @@ if($stmt->rowCount() == 0) {
 
 $card = $stmt->fetch();
 
-// Check if the user owns this card or if it's a public view
 $is_owner = isLoggedIn() && $card['user_id'] == $_SESSION['user_id'];
 
-// If not logged in or not the owner, check if this is a public share
 $is_public_view = isset($_GET['share']) && $_GET['share'] == true;
 
 if(!$is_owner && !$is_public_view) {
@@ -43,10 +38,8 @@ if(!$is_owner && !$is_public_view) {
     exit;
 }
 
-// Parse the custom fields
 $custom_fields = json_decode($card['custom_fields'], true);
 
-// Get the user information
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$card['user_id']]);
 $user = $stmt->fetch();
@@ -68,14 +61,11 @@ $user = $stmt->fetch();
         <?php endif; ?>
     </div>
     
-    <!-- Card Preview -->
     <div class="bg-white shadow-md rounded-lg p-6 mb-6">
         <div class="flex flex-col md:flex-row gap-8">
-            <!-- Card Display -->
             <div class="w-full md:w-2/3 mx-auto">
                 <div class="border rounded-lg overflow-hidden shadow-lg">
                     <?php 
-                    // Different background colors based on design category
                     $bg_color = "bg-blue-600";
                     if($card['category'] == 'Creative') {
                         $bg_color = "bg-pink-500";
@@ -133,12 +123,10 @@ $user = $stmt->fetch();
     </div>
     
     <?php if($is_owner): ?>
-    <!-- Share Options -->
     <div class="bg-white shadow-md rounded-lg p-6">
         <h3 class="text-xl font-bold mb-4">Share Your Business Card</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- QR Code -->
             <div>
                 <h4 class="font-bold mb-3">QR Code</h4>
                 <div id="qrcode" class="mb-3"></div>
@@ -147,7 +135,6 @@ $user = $stmt->fetch();
                 </button>
             </div>
             
-            <!-- Email Sharing -->
             <div>
                 <h4 class="font-bold mb-3">Share via Email</h4>
                 <form id="shareForm" method="POST" action="/pages/cards/share.php">
@@ -170,7 +157,6 @@ $user = $stmt->fetch();
             </div>
         </div>
         
-        <!-- Direct Link -->
         <div class="mt-6">
             <h4 class="font-bold mb-3">Direct Link</h4>
             <div class="flex">
@@ -186,7 +172,6 @@ $user = $stmt->fetch();
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Generate QR Code
     var qrcode = new QRCode(document.getElementById("qrcode"), {
         text: "<?php echo $_SERVER['HTTP_HOST'] . '/pages/cards/view.php?id=' . $card_id . '&share=true'; ?>",
         width: 200,
@@ -196,7 +181,6 @@ document.addEventListener('DOMContentLoaded', function() {
         correctLevel: QRCode.CorrectLevel.H
     });
     
-    // Copy share link to clipboard
     document.getElementById('copyLink').addEventListener('click', function() {
         var shareLink = document.getElementById('share_link');
         shareLink.select();
@@ -204,7 +188,6 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Link copied to clipboard!');
     });
     
-    // Download QR code as image
     document.getElementById('downloadQR').addEventListener('click', function() {
         var img = document.querySelector('#qrcode img');
         var link = document.createElement('a');

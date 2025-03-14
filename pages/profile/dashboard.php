@@ -1,24 +1,20 @@
 <?php
-// Define base URL for assets
 $base_url = '../../';
 
 require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 require_once '../../config/config.php';
 
-// Check if user is logged in
 if(!isLoggedIn()) {
     setMessage("You must be logged in to access this page.", "error");
     header("Location: " . BASE_URL . "pages/auth/login.php");
     exit;
 }
 
-// Get user information
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $user = $stmt->fetch();
 
-// Get user's cards
 $stmt = $pdo->prepare("
     SELECT uc.*, cd.name as design_name, cd.category 
     FROM user_cards uc 

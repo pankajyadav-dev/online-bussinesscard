@@ -1,18 +1,15 @@
 <?php
-// Define base URL for assets
 $base_url = '../../';
 
 require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 
-// Check if user is logged in
 if(!isLoggedIn()) {
     setMessage("You must be logged in to access this page.", "error");
     header("Location: /pages/auth/login.php");
     exit;
 }
 
-// Check if card ID is provided
 if(!isset($_GET['id']) || empty($_GET['id'])) {
     setMessage("Invalid card ID.", "error");
     header("Location: /pages/profile/dashboard.php");
@@ -21,7 +18,6 @@ if(!isset($_GET['id']) || empty($_GET['id'])) {
 
 $card_id = (int)$_GET['id'];
 
-// Get card information
 $stmt = $pdo->prepare("
     SELECT uc.*, cd.name as design_name, cd.template_path, cd.category
     FROM user_cards uc 
@@ -38,17 +34,14 @@ if($stmt->rowCount() == 0) {
 
 $card = $stmt->fetch();
 
-// Check if the user owns this card
 if($card['user_id'] != $_SESSION['user_id']) {
     setMessage("You don't have permission to edit this card.", "error");
     header("Location: /pages/profile/dashboard.php");
     exit;
 }
 
-// Parse the custom fields
 $custom_fields = json_decode($card['custom_fields'], true);
 
-// Process form submission
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     $card_name = sanitizeInput($_POST['card_name']);
     $name = sanitizeInput($_POST['name']);
@@ -59,7 +52,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     $website = sanitizeInput($_POST['website']);
     $address = sanitizeInput($_POST['address']);
     
-    // Validate inputs
     $errors = [];
     
     if(empty($card_name)) {
@@ -70,9 +62,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Name is required";
     }
     
-    // If no errors, update the card
     if(empty($errors)) {
-        // Prepare custom fields as JSON
         $updated_custom_fields = json_encode([
             'name' => $name,
             'job_title' => $job_title,
@@ -83,7 +73,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             'address' => $address
         ]);
         
-        // Update in database
         $stmt = $pdo->prepare("
             UPDATE user_cards 
             SET card_name = ?, custom_fields = ? 
@@ -120,7 +109,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h3 class="text-xl font-bold mb-4">Card Design</h3>
                 <div class="border rounded-lg overflow-hidden shadow-md mb-4">
                     <?php 
-                    // Different background colors based on design category
                     $bg_color = "bg-blue-600";
                     if($card['category'] == 'Creative') {
                         $bg_color = "bg-pink-500";

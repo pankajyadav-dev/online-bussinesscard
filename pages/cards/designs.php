@@ -1,22 +1,18 @@
 <?php
-// Define base URL for assets
 $base_url = '../../';
 
 require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 require_once '../../config/config.php';
 
-// Check if user is logged in
 if(!isLoggedIn()) {
     setMessage("You must be logged in to access this page.", "error");
     header("Location: " . BASE_URL . "pages/auth/login.php");
     exit;
 }
 
-// Get the category filter if provided
 $category_filter = isset($_GET['category']) ? sanitizeInput($_GET['category']) : '';
 
-// Get all card designs from database
 if(!empty($category_filter)) {
     $stmt = $pdo->prepare("SELECT * FROM card_designs WHERE category = ? ORDER BY name");
     $stmt->execute([$category_filter]);
@@ -27,7 +23,6 @@ if(!empty($category_filter)) {
 
 $designs = $stmt->fetchAll();
 
-// Group designs by category
 $categories = [];
 foreach($designs as $design) {
     if(!isset($categories[$design['category']])) {

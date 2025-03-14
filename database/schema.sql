@@ -1,8 +1,6 @@
--- Create database if not exists
 CREATE DATABASE IF NOT EXISTS business_card_db;
 USE business_card_db;
 
--- Users table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -19,7 +17,6 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Business card designs table
 CREATE TABLE IF NOT EXISTS card_designs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -28,7 +25,6 @@ CREATE TABLE IF NOT EXISTS card_designs (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- User cards table
 CREATE TABLE IF NOT EXISTS user_cards (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -41,7 +37,6 @@ CREATE TABLE IF NOT EXISTS user_cards (
     FOREIGN KEY (design_id) REFERENCES card_designs(id)
 );
 
--- Insert some default card designs
 INSERT INTO card_designs (name, template_path, category) VALUES
 ('Classic White', 'templates/classic_white.php', 'Professional'),
 ('Modern Blue', 'templates/modern_blue.php', 'Professional'),

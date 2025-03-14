@@ -1,18 +1,15 @@
 <?php
-// Define base URL for assets
 $base_url = '../../';
 
 require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 
-// Check if user is logged in
 if(!isLoggedIn()) {
     setMessage("You must be logged in to access this page.", "error");
     header("Location: /pages/auth/login.php");
     exit;
 }
 
-// Check if card ID is provided
 if(!isset($_GET['id']) || empty($_GET['id'])) {
     setMessage("Invalid card ID.", "error");
     header("Location: /pages/profile/dashboard.php");
@@ -21,7 +18,6 @@ if(!isset($_GET['id']) || empty($_GET['id'])) {
 
 $card_id = (int)$_GET['id'];
 
-// Check if the card exists and belongs to the user
 $stmt = $pdo->prepare("SELECT * FROM user_cards WHERE id = ? AND user_id = ?");
 $stmt->execute([$card_id, $_SESSION['user_id']]);
 
@@ -31,7 +27,6 @@ if($stmt->rowCount() == 0) {
     exit;
 }
 
-// Process deletion if confirmed
 if(isset($_GET['confirm']) && $_GET['confirm'] == 'yes') {
     $stmt = $pdo->prepare("DELETE FROM user_cards WHERE id = ? AND user_id = ?");
     
@@ -45,7 +40,6 @@ if(isset($_GET['confirm']) && $_GET['confirm'] == 'yes') {
     exit;
 }
 
-// Get card information for confirmation page
 $stmt = $pdo->prepare("
     SELECT uc.*, cd.name as design_name
     FROM user_cards uc 
@@ -55,7 +49,6 @@ $stmt = $pdo->prepare("
 $stmt->execute([$card_id]);
 $card = $stmt->fetch();
 
-// Parse the custom fields
 $custom_fields = json_decode($card['custom_fields'], true);
 ?>
 

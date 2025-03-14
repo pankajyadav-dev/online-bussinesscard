@@ -1,27 +1,22 @@
 <?php
-// Define base URL for assets
 $base_url = '../../';
 
 require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 
-// Check if user is already logged in
 if(isLoggedIn()) {
     header("Location: /index.php");
     exit;
 }
 
-// Check if form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = sanitizeInput($_POST['name']);
     $email = sanitizeInput($_POST['email']);
     $password = sanitizeInput($_POST['password']);
     $confirm_password = sanitizeInput($_POST['confirm_password']);
     
-    // Initialize errors array
     $errors = [];
     
-    // Validate inputs
     if(empty($name)) {
         $errors[] = "Name is required";
     }
@@ -42,7 +37,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Passwords do not match";
     }
     
-    // Check if email already exists
     $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
     $stmt->execute([$email]);
     
@@ -50,28 +44,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Email already exists";
     }
     
-    // If no errors, proceed with registration
     if(empty($errors)) {
-        // Hash password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         
-        // Generate verification code
         $verification_code = generateVerificationCode();
         
-        // Insert user into database
         $stmt = $pdo->prepare("INSERT INTO users (name, email, password, verification_code) VALUES (?, ?, ?, ?)");
         
         if($stmt->execute([$name, $email, $hashed_password, $verification_code])) {
-            // Get the user ID
             $user_id = $pdo->lastInsertId();
             
-            // Send verification email
             if(sendVerificationEmail($email, $name, $verification_code)) {
-                // Store user data in session
                 $_SESSION['temp_user_id'] = $user_id;
                 $_SESSION['temp_email'] = $email;
                 
-                // Redirect to verification page
                 header("Location: verify.php");
                 exit;
             } else {
@@ -84,7 +70,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-8">
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md my-10">
     <h2 class="text-2xl font-bold mb-6 text-center">Create an Account</h2>
     
     <?php if(isset($errors) && !empty($errors)): ?>

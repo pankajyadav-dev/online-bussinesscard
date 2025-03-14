@@ -5,43 +5,32 @@ require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 require_once '../../config/config.php';
 
-// Check if user is already logged in
 if(isLoggedIn()) {
     header("Location: " . BASE_URL);
     exit;
 }
 
-// Check if form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = sanitizeInput($_POST['email']);
     $password = sanitizeInput($_POST['password']);
     
-    // Validate inputs
     if(empty($email) || empty($password)) {
         $error = "Please enter both email and password";
     } else {
-        // Check if user exists
         $stmt = $pdo->prepare("SELECT id, name, email, password, is_verified FROM users WHERE email = ?");
         $stmt->execute([$email]);
         
         if($stmt->rowCount() > 0) {
             $user = $stmt->fetch();
             
-            // Verify password
             if(password_verify($password, $user['password'])) {
-                // Check if user is verified
                 if($user['is_verified']) {
-                    // Set user as logged in
                     $_SESSION['user_id'] = $user['id'];
-                    
-                    // Set success message
                     setMessage("Welcome back, " . $user['name'] . "!", "success");
                     
-                    // Redirect to dashboard
                     header("Location: " . BASE_URL . "pages/profile/dashboard.php");
                     exit;
                 } else {
-                    // User is not verified, send to verification page
                     $_SESSION['temp_user_id'] = $user['id'];
                     $_SESSION['temp_email'] = $user['email'];
                     
@@ -60,7 +49,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-8">
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md my-10 min-h-[63vh]">
     <h2 class="text-2xl font-bold mb-6 text-center">Log In to Your Account</h2>
     
     <?php if(isset($error)): ?>

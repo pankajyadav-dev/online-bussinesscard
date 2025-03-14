@@ -4,14 +4,12 @@ require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 require_once '../../config/config.php';
 
-// Check if user is logged in
 if(!isLoggedIn()) {
     setMessage("You must be logged in to access this page.", "error");
     header("Location: " . BASE_URL . "pages/auth/login.php");
     exit;
 }
 
-// Check if design_id is provided
 if(!isset($_GET['design_id']) || empty($_GET['design_id'])) {
     setMessage("Please select a design first.", "error");
     header("Location: " . BASE_URL . "pages/cards/designs.php");
@@ -19,8 +17,6 @@ if(!isset($_GET['design_id']) || empty($_GET['design_id'])) {
 }
 
 $design_id = (int)$_GET['design_id'];
-
-// Get design information
 $stmt = $pdo->prepare("SELECT * FROM card_designs WHERE id = ?");
 $stmt->execute([$design_id]);
 
@@ -32,12 +28,10 @@ if($stmt->rowCount() == 0) {
 
 $design = $stmt->fetch();
 
-// Get user information for pre-filling the form
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $user = $stmt->fetch();
 
-// Process form submission
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     $card_name = sanitizeInput($_POST['card_name']);
     $name = sanitizeInput($_POST['name']);
@@ -48,7 +42,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     $website = sanitizeInput($_POST['website']);
     $address = sanitizeInput($_POST['address']);
     
-    // Validate inputs
     $errors = [];
     
     if(empty($card_name)) {
@@ -59,9 +52,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Name is required";
     }
     
-    // If no errors, save the card
     if(empty($errors)) {
-        // Prepare custom fields as JSON
         $custom_fields = json_encode([
             'name' => $name,
             'job_title' => $job_title,
@@ -72,7 +63,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             'address' => $address
         ]);
         
-        // Insert into database
         $stmt = $pdo->prepare("
             INSERT INTO user_cards (user_id, design_id, card_name, custom_fields) 
             VALUES (?, ?, ?, ?)

@@ -1,25 +1,21 @@
 <?php
-// Define base URL for assets
 $base_url = '../../';
 
 require_once '../../includes/header.php';
 require_once '../../includes/functions.php';
 require_once '../../config/config.php';
 
-// Check if user is logged in
 if(!isLoggedIn()) {
     setMessage("You must be logged in to access this page.", "error");
     header("Location: " . BASE_URL . "pages/auth/login.php");
     exit;
 }
 
-// Check if it's a POST request to share via email
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     $card_id = isset($_POST['card_id']) ? (int)$_POST['card_id'] : 0;
     $recipient_email = sanitizeInput($_POST['recipient_email']);
     $message = sanitizeInput($_POST['message']);
-    
-    // Validate inputs
+
     $errors = [];
     
     if(empty($card_id)) {
@@ -32,7 +28,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Invalid email format";
     }
     
-    // Check if the card exists and belongs to the user
     $stmt = $pdo->prepare("
         SELECT uc.*, cd.name as design_name, cd.category
         FROM user_cards uc 
@@ -46,21 +41,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $card = $stmt->fetch();
         $custom_fields = json_decode($card['custom_fields'], true);
-        
-        // Get user information
+
         $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$_SESSION['user_id']]);
         $user = $stmt->fetch();
     }
-    
-    // If no errors, send the email
     if(empty($errors)) {
         $subject = $user['name'] . " shared a business card with you";
-        
-        // Generate card URL
+
         $card_url = $_SERVER['HTTP_HOST'] . '/' . ltrim(BASE_URL, 'http://'. $_SERVER['HTTP_HOST'] . '/') . 'pages/cards/view.php?id=' . $card_id . '&share=true';
-        
-        // Generate email body with card preview
+
         $body = "
             <html>
             <head>
@@ -107,7 +97,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             </html>
         ";
         
-        // Send email
+
         if(sendEmail($recipient_email, $subject, $body)) {
             setMessage("Business card has been shared successfully.", "success");
             header("Location: " . BASE_URL . "pages/cards/view.php?id=" . $card_id);
@@ -118,11 +108,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// If it's a GET request, check for card ID parameter
+
 if(isset($_GET['id']) && !empty($_GET['id'])) {
     $card_id = (int)$_GET['id'];
     
-    // Check if the card exists and belongs to the user
+
     $stmt = $pdo->prepare("
         SELECT uc.*, cd.name as design_name, cd.category
         FROM user_cards uc 
@@ -166,13 +156,11 @@ if(isset($_GET['id']) && !empty($_GET['id'])) {
         <?php endif; ?>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Card Preview -->
             <div>
                 <h3 class="text-xl font-bold mb-4">Card Preview</h3>
                 
                 <div class="border rounded-lg overflow-hidden shadow-md">
                     <?php 
-                    // Different background colors based on design category
                     $bg_color = "bg-blue-600";
                     if($card['category'] == 'Creative') {
                         $bg_color = "bg-pink-500";
@@ -219,8 +207,7 @@ if(isset($_GET['id']) && !empty($_GET['id'])) {
                     </div>
                 </div>
             </div>
-            
-            <!-- Email Form -->
+
             <div>
                 <h3 class="text-xl font-bold mb-4">Email This Card</h3>
                 
@@ -244,13 +231,12 @@ if(isset($_GET['id']) && !empty($_GET['id'])) {
             </div>
         </div>
     </div>
-    
-    <!-- Alternative Sharing Methods -->
+
     <div class="bg-white shadow-md rounded-lg p-6">
         <h3 class="text-xl font-bold mb-4">Other Sharing Options</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- QR Code -->
+
             <div>
                 <h4 class="font-bold mb-3">QR Code</h4>
                 <p class="text-gray-600 mb-3">Share your business card in person using this QR code.</p>
@@ -259,8 +245,7 @@ if(isset($_GET['id']) && !empty($_GET['id'])) {
                     <i class="fas fa-download mr-1"></i> Download QR Code
                 </button>
             </div>
-            
-            <!-- Direct Link -->
+
             <div>
                 <h4 class="font-bold mb-3">Direct Link</h4>
                 <p class="text-gray-600 mb-3">Copy this link to share your business card on social media or messaging apps.</p>
@@ -278,7 +263,6 @@ if(isset($_GET['id']) && !empty($_GET['id'])) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Generate QR Code
     var qrcode = new QRCode(document.getElementById("qrcode"), {
         text: "<?php echo 'http://' . $_SERVER['HTTP_HOST'] . '/' . ltrim(BASE_URL, 'http://'. $_SERVER['HTTP_HOST'] . '/') . 'pages/cards/view.php?id=' . $card_id . '&share=true'; ?>",
         width: 200,
@@ -288,7 +272,6 @@ document.addEventListener('DOMContentLoaded', function() {
         correctLevel: QRCode.CorrectLevel.H
     });
     
-    // Copy share link to clipboard
     document.getElementById('copyLink').addEventListener('click', function() {
         var shareLink = document.getElementById('share_link');
         shareLink.select();
@@ -296,7 +279,6 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Link copied to clipboard!');
     });
     
-    // Download QR code as image
     document.getElementById('downloadQR').addEventListener('click', function() {
         var img = document.querySelector('#qrcode img');
         var link = document.createElement('a');

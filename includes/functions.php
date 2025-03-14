@@ -2,24 +2,19 @@
 require_once __DIR__ . '/../config/config.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-// Set a flash message
 function setMessage($message, $type = 'success') {
     $_SESSION['message'] = $message;
     $_SESSION['message_type'] = $type;
 }
 
-// Generate random string for verification code
 function generateVerificationCode($length = 6) {
     return substr(str_shuffle("0123456789"), 0, $length);
 }
 
-// Send email using PHPMailer
 function sendEmail($to, $subject, $body) {
-    // Enable error display for debugging
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
     
-    // Check if composer autoload exists
     $autoloadPath = __DIR__ . '/../vendor/autoload.php';
     if (!file_exists($autoloadPath)) {
         error_log("PHPMailer autoload file not found at: " . $autoloadPath);
@@ -28,27 +23,23 @@ function sendEmail($to, $subject, $body) {
     
     require $autoloadPath;
     
-    // Import required PHPMailer classes
 
     
     $mail = new PHPMailer(true);
     
     try {
-        // Server settings
-        $mail->SMTPDebug = 0; // Enable verbose debug output (0 for production)
+        $mail->SMTPDebug = 0;
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com'; // Change to your SMTP server
+        $mail->Host       = 'smtp.gmail.com'; 
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'siri963690@gmail.com'; // CHANGE THIS to your actual email
-        $mail->Password   = 'npso otex mvuk cbhe'; // CHANGE THIS to your actual app password
+        $mail->Username   = 'siri963690@gmail.com'; 
+        $mail->Password   = 'npso otex mvuk cbhe'; 
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
         
-        // Recipients
-        $mail->setFrom('your-email@gmail.com', 'Business Card Creator'); // CHANGE THIS
+        $mail->setFrom('your-email@gmail.com', 'Business Card Creator'); 
         $mail->addAddress($to);
         
-        // Content
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $body;
@@ -61,38 +52,7 @@ function sendEmail($to, $subject, $body) {
         return false;
     }
 }
-// function sendEmail($to, $subject, $body) {
-//     require './vendor/autoload.php'; // Make sure you have PHPMailer installed via Composer
-    
-//     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-    
-//     try {
-//         // Server settings
-//         $mail->isSMTP();
-//         $mail->Host       = 'smtp.gmail.com'; // Change to your SMTP server
-//         $mail->SMTPAuth   = true;
-//         $mail->Username   = 'siri963690@gmail.com'; // SMTP username
-//         $mail->Password   = 'npso otex mvuk cbhe'; // SMTP password
-//         $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-//         $mail->Port       = 587;
-        
-//         // Recipients
-//         $mail->setFrom('businesscard@gmail.com', 'Business Card Creator');
-//         $mail->addAddress($to);
-        
-//         // Content
-//         $mail->isHTML(true);
-//         $mail->Subject = $subject;
-//         $mail->Body    = $body;
-        
-//         $mail->send();
-//         return true;
-//     } catch (Exception $e) {
-//         return false;
-//     }
-// }
 
-// Send OTP verification email
 function sendVerificationEmail($email, $name, $code) {
     $subject = "Email Verification - Business Card Creator";
     $body = "
@@ -119,14 +79,11 @@ function sendVerificationEmail($email, $name, $code) {
     return sendEmail($email, $subject, $body);
 }
 
-// Generate QR code for a card
 function generateQRCode($cardId) {
-    // Return the URL that will be used to generate QR code in JavaScript
     global $base_url;
     return $base_url . "/pages/cards/view.php?id=" . $cardId . "&share=true";
 }
 
-// Sanitize input
 function sanitizeInput($data) {
     $data = trim($data);
     $data = stripslashes($data);
