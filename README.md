@@ -25,7 +25,7 @@ A web application built with PHP, HTML, JavaScript, and Tailwind CSS that allows
 
 1. Clone the repository:
 ```
-git clone https://github.com/yourusername/business-card-creator.git
+git clone https://github.com/pankajyadav-dev/online-bussinesscard.git
 cd business-card-creator
 ```
 

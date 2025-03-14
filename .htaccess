@@ -11,7 +11,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 # Forward 404 errors to index.php
 # RewriteRule ^(.*)$ index.php [QSA,L]
 
-# Allow direct access to files
+# Allow direct access to files (including SVG)
 <FilesMatch "\.(css|js|png|jpg|jpeg|gif|svg|ico|pdf)$">
     Order Allow,Deny
     Allow from all
@@ -46,6 +46,11 @@ Options -Indexes
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
-</IfModule> 
+</IfModule>
+
+# Ensure SVG files are served with the correct MIME type
+AddType image/svg+xml svg svgz
+AddEncoding gzip svgz

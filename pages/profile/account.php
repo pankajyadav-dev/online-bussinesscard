@@ -176,7 +176,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
     
-    <div class="bg-white shadow-md rounded-lg p-6">
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
         <h3 class="text-xl font-bold mb-4">Change Password</h3>
         
         <?php if (!empty($password_errors)): ?>

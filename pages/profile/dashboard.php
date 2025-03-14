@@ -74,7 +74,7 @@ $cards = $stmt->fetchAll();
         </div>
     <?php else: ?>
         <div class="text-center py-8">
-            <img src="<?php echo url('assets/empty-state.svg'); ?>" alt="No cards" class="w-64 mx-auto mb-4 opacity-50">
+            <img src="<?php echo url('assets/state.svg'); ?>" alt="No cards" class="w-64 mx-auto mb-4 opacity-50">
             <p class="text-gray-600 mb-4">You haven't created any business cards yet.</p>
             <a href="<?php echo url('pages/cards/designs.php'); ?>" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Create Your First Card</a>
         </div>
